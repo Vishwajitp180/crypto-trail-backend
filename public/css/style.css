@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f8f0;
+    background-color: lightyellow;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 60px;
+  }
+  
+  h1, h2, h3 {
+    color: #2e7d32;
+  }
+  
+  .card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 320px;
+    margin: 20px;
+    text-align: center;
+  }
+  
+  .input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  .btn {
+    background-color: green;
+    color: white;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+  }
+  
+  .btn:hover {
+    background-color: darkgreen;
+  }
+/* Dashboard Styles */
+.dashboard-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.dashboard-container h2 {
+  text-align: center;
+  color: #137518;
+  margin-bottom: 20px;
+  background-color: #f0f1f0;
+}
+
+/* Add new entry button */
+.add-entry-btn {
+  display: inline-block;
+  background-color: green;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-bottom: 15px;
+}
+
+.add-entry-btn:hover {
+  background-color: darkgreen;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table thead {
+  background: #2e7d32;
+  color: white;
+}
+
+table th, table td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+table tr:hover {
+  background: #f1f8e9;
+}

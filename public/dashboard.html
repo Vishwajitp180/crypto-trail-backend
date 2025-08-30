@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agriculture Diary - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <h2>📒 My Agriculture Diary</h2>
+
+      <button id="logoutBtn" class="btn logout">🚪 Logout</button>
+      <a href="add-log.html" class="add-entry-btn">➕ Add New Entry</a>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Crop Name</th>
+            <th>Activity</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button id="clearAll" class="btn">🗑️ Clear All</button>
+    </div>
+    <div id="weather-info" style="padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px;">
+      Loading weather & NDVI...
+    </div>
+    <div id="weather-info" class="p-3 mb-4 bg-green-100 rounded">
+      Loading weather & NDVI...
+    </div>
+        
+    <script>
+      // Check login
+      async function checkAuth() {
+        const res = await fetch("/api/check-auth", { credentials: "include" });
+        const data = await res.json();
+        if (!data.loggedIn) window.location.href = "/";
+      }
+      checkAuth();
+
+      const tbody = document.querySelector("tbody");
+
+      // Format date for <input type="date">
+      function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${d.getFullYear()}-${month}-${day}`;
+      }
+
+      // Fetch logs from backend
+      async function fetchLogs() {
+        const res = await fetch("/api/logs", { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          return data.logs || [];
+        }
+        return [];
+      }
+
+      // Render logs in table
+      async function renderLogs() {
+        const logs = await fetchLogs();
+        tbody.innerHTML = "";
+
+        if (logs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4">No logs found.</td></tr>`;
+          return;
+        }
+
+        logs.forEach((log) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><input type="text" value="${log.crop}" disabled></td>
+            <td><input type="text" value="${log.activity}" disabled></td>
+            <td><input type="date" value="${formatDate(
+              log.date
+            )}" disabled></td>
+            <td>
+              <button onclick="deleteLog('${log._id}')">🗑️ Delete</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      // Delete a single log
+      async function deleteLog(logId) {
+        const res = await fetch(`/api/logs/${logId}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success) renderLogs();
+      }
+
+      // Clear all logs
+      document
+        .getElementById("clearAll")
+        .addEventListener("click", async () => {
+          if (confirm("Are you sure you want to clear all entries?")) {
+            const res = await fetch("/api/logs", {
+              method: "DELETE",
+              credentials: "include",
+            });
+            const data = await res.json();
+            if (data.success) renderLogs();
+          }
+        });
+
+      // Logout button
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async () => {
+          const res = await fetch("/api/logout", {
+            method: "POST",
+            credentials: "include",
+          });
+          const data = await res.json();
+          if (data.success) window.location.href = "/";
+        });
+
+      async function fetchReminders() {
+        const res = await fetch("/api/reminders");
+        const data = await res.json();
+
+        if (data.reminders) {
+          data.reminders.forEach((r) => {
+            if (Notification.permission === "granted") {
+              new Notification("🌱 Farm Reminder", {
+                body: `Tomorrow: ${r.crop} - ${r.activity}`,
+              });
+            }
+          });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if ("Notification" in window && Notification.permission !== "granted") {
+          Notification.requestPermission();
+        }
+        fetchReminders();
+      });
+      async function fetchAgroData() {
+  try {
+    const res = await fetch("/agro-data");
+    const data = await res.json();
+
+    // Display weather
+    const weatherDiv = document.getElementById("weather-info");
+    weatherDiv.innerHTML = `
+      <p>🌡️ Temperature: ${data.weather.temp} °C</p>
+      <p>🌦️ Forecast: ${data.weather.forecast}</p>
+      <p>🌱 NDVI: ${data.ndvi}</p>
+    `;
+  } catch (err) {
+    console.error("Failed to fetch Agro data:", err);
+  }
+}
+fetchAgroData();
+// Call on page load
+      renderLogs();
+    </script>
+  </body>
+</html>

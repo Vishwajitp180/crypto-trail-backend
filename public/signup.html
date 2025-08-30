@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agriculture Diary - Signup</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <form class="card">
+        <h2>Create Account</h2>
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          class="input"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          class="input"
+          required
+        />
+
+        <button type="submit" class="btn">Signup</button>
+      </form>
+      <p>Already have an account? <a href="login.html">Login</a></p>
+    </div>
+
+    <script>
+      document.querySelector("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.querySelector("input[name='email']").value;
+        const password = document.querySelector("input[name='password']").value;
+
+        const response = await fetch("/api/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert("Signup successful! Please login now.");
+          window.location.href = "/login.html";
+        } else {
+          alert(data.message || "Signup failed");
+        }
+      });
+    </script>
+  </body>
+</html>

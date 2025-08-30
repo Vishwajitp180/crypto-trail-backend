@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agriculture Diary - Add Log</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <form id="logForm" class="card">
+        <h2>Add Diary Entry</h2>
+
+        <input
+          type="text"
+          name="crop"
+          placeholder="Crop Name"
+          class="input"
+          required
+        />
+
+        <input
+          type="text"
+          name="activity"
+          placeholder="Activity (watering, fertilizing...)"
+          class="input"
+          required
+        />
+
+        <input type="date" name="date" class="input" required />
+
+        <textarea
+          name="notes"
+          placeholder="Notes (optional)"
+          class="input"
+        ></textarea>
+
+        <button type="submit" class="btn">Save Entry</button>
+      </form>
+    </div>
+
+    <script>
+      // Check auth before adding log
+      async function checkAuth() {
+        const res = await fetch("/api/check-auth", { credentials: "include" });
+        const data = await res.json();
+        if (!data.loggedIn) window.location.href = "/";
+      }
+      checkAuth();
+
+      document
+        .getElementById("logForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const crop = document.querySelector("input[name='crop']").value;
+          const activity = document.querySelector(
+            "input[name='activity']"
+          ).value;
+          const date = document.querySelector("input[name='date']").value;
+          const notes = document.querySelector("textarea[name='notes']").value;
+
+          const res = await fetch("/api/logs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ crop, activity, date, notes }),
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            alert("Log added successfully!");
+            window.location.href = "/dashboard";
+          } else {
+            alert("Failed to add log: " + (data.error || JSON.stringify(data)));
+          }
+        });
+    </script>
+  </body>
+</html>
